@@ -22,6 +22,7 @@ const Routes = createAppContainer(
         backgroundColor: '#191920',
       },
       cardShadowEnabled: false,
+      // initialRouteName: 'Cart',
     }
   )
 );

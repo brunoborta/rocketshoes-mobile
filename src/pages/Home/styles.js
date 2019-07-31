@@ -58,6 +58,7 @@ export const Counter = styled.Text`
   color: #fff;
   margin-left: 5px;
 `;
+
 export const CartAddText = styled.Text`
   color: #fff;
   font-weight: bold;

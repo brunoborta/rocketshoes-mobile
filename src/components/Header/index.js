@@ -1,11 +1,12 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Wrapper, Container, Logo, Badge, CartButton } from './styles';
 
-export default function Header({ navigate }) {
+function Header({ navigate, cartSize }) {
   return (
     <Wrapper>
       <Container>
@@ -14,7 +15,7 @@ export default function Header({ navigate }) {
         </TouchableOpacity>
         <CartButton onPress={() => navigate('Cart')}>
           <Icon name="shopping-basket" size={20} color="#FFF" />
-          <Badge>3</Badge>
+          {cartSize ? <Badge>{cartSize}</Badge> : null}
         </CartButton>
       </Container>
     </Wrapper>
@@ -23,4 +24,10 @@ export default function Header({ navigate }) {
 
 Header.propTypes = {
   navigate: PropTypes.func.isRequired,
+  cartSize: PropTypes.number.isRequired,
 };
+
+const mapStateToProps = state => ({
+  cartSize: state.cart.length,
+});
+export default connect(mapStateToProps)(Header);
