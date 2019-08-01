@@ -26,11 +26,24 @@ import {
   ProductTotal,
   AddIcon,
   RemoveIcon,
+  DeleteIcon,
+  RemoveButton,
   Input,
 } from './styles';
 
-function Cart({ cart, total }) {
-  console.tron.log(cart);
+function Cart({ cart, total, updateCartRequest, removeToCart }) {
+  function handleIncrement({ id, quantity }) {
+    return updateCartRequest(id, quantity + 1);
+  }
+
+  function handleDecrement({ id, quantity }) {
+    return updateCartRequest(id, quantity - 1);
+  }
+
+  function handleRemove(id) {
+    return removeToCart(id);
+  }
+
   return (
     <Container>
       <CartContainer>
@@ -46,14 +59,17 @@ function Cart({ cart, total }) {
                 <Title>{product.title}</Title>
                 <Price>{product.formattedPrice}</Price>
               </Description>
+              <RemoveButton onPress={() => handleRemove(product.id)}>
+                <DeleteIcon />
+              </RemoveButton>
             </Info>
             <SilverBar>
               <Controls>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => handleIncrement(product)}>
                   <AddIcon />
                 </TouchableOpacity>
                 <Input value={String(product.quantity)} />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDecrement(product)}>
                   <RemoveIcon />
                 </TouchableOpacity>
               </Controls>
@@ -102,6 +118,8 @@ Cart.propTypes = {
     })
   ).isRequired,
   total: PropTypes.string.isRequired,
+  updateCartRequest: PropTypes.func.isRequired,
+  removeToCart: PropTypes.func.isRequired,
 };
 
 export default connect(

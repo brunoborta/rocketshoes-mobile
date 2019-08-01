@@ -80,6 +80,17 @@ export const Input = styled.TextInput.attrs({
   color: #666;
 `;
 
+export const RemoveButton = styled.TouchableOpacity`
+  padding: 0 5px;
+  justify-content: center;
+`;
+
+export const DeleteIcon = styled(Icon).attrs({
+  name: 'delete',
+  size: 22,
+  color: '#000',
+})``;
+
 export const RemoveIcon = styled(Icon).attrs({
   name: 'remove',
   size: 22,

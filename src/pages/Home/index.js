@@ -28,7 +28,7 @@ class Home extends Component {
   };
 
   static propTypes = {
-    addToCartSuccess: PropTypes.func.isRequired,
+    addToCartRequest: PropTypes.func.isRequired,
     quantity: PropTypes.arrayOf(PropTypes.number).isRequired,
   };
 
@@ -45,9 +45,9 @@ class Home extends Component {
   }
 
   handleButton = product => {
-    const { addToCartSuccess } = this.props;
+    const { addToCartRequest } = this.props;
 
-    addToCartSuccess(product);
+    addToCartRequest(product);
   };
 
   render() {
