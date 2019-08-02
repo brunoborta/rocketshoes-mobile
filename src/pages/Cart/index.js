@@ -1,10 +1,11 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 
-import * as CartActions from '../../store/modules/cart/actions';
+import {
+  updateCartRequest,
+  removeToCart,
+} from '../../store/modules/cart/actions';
 import { formatPrice } from '../../util/format';
 
 import {
@@ -31,17 +32,38 @@ import {
   Input,
 } from './styles';
 
-function Cart({ cart, total, updateCartRequest, removeToCart }) {
+function Cart() {
+  const cart = useSelector(state =>
+    state.cart.map(prod => {
+      return {
+        ...prod,
+        formattedPrice: formatPrice(prod.price),
+        subtotal: formatPrice(prod.price * prod.quantity),
+      };
+    })
+  );
+
+  const total = useSelector(state =>
+    formatPrice(
+      state.cart.reduce((acc, prod) => {
+        acc += prod.price * prod.quantity;
+        return acc;
+      }, 0)
+    )
+  );
+
+  const dispatch = useDispatch();
+
   function handleIncrement({ id, quantity }) {
-    return updateCartRequest(id, quantity + 1);
+    return dispatch(updateCartRequest(id, quantity + 1));
   }
 
   function handleDecrement({ id, quantity }) {
-    return updateCartRequest(id, quantity - 1);
+    return dispatch(updateCartRequest(id, quantity - 1));
   }
 
   function handleRemove(id) {
-    return removeToCart(id);
+    return dispatch(removeToCart(id));
   }
 
   return (
@@ -89,40 +111,4 @@ function Cart({ cart, total, updateCartRequest, removeToCart }) {
   );
 }
 
-const mapStateToProps = state => ({
-  cart: state.cart.map(prod => {
-    return {
-      ...prod,
-      formattedPrice: formatPrice(prod.price),
-      subtotal: formatPrice(prod.price * prod.quantity),
-    };
-  }),
-  total: formatPrice(
-    state.cart.reduce((acc, prod) => {
-      acc += prod.price * prod.quantity;
-      return acc;
-    }, 0)
-  ),
-});
-
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(CartActions, dispatch);
-
-Cart.propTypes = {
-  cart: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number,
-      price: PropTypes.number,
-      title: PropTypes.string,
-      image: PropTypes.string,
-    })
-  ).isRequired,
-  total: PropTypes.string.isRequired,
-  updateCartRequest: PropTypes.func.isRequired,
-  removeToCart: PropTypes.func.isRequired,
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Cart);
+export default Cart;
