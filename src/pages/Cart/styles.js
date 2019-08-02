@@ -5,7 +5,7 @@ export const Container = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
 })`
   background: #191920;
-  padding: 20px 0;
+  margin: 20px 0;
 `;
 
 export const CartContainer = styled.View`
@@ -63,7 +63,7 @@ export const Controls = styled.View`
 export const AddIcon = styled(Icon).attrs({
   name: 'add',
   size: 22,
-  color: '#000',
+  color: '#7159c1',
 })`
   margin: 0 10px;
 `;
@@ -88,13 +88,13 @@ export const RemoveButton = styled.TouchableOpacity`
 export const DeleteIcon = styled(Icon).attrs({
   name: 'delete',
   size: 22,
-  color: '#000',
+  color: '#7159c1',
 })``;
 
 export const RemoveIcon = styled(Icon).attrs({
   name: 'remove',
   size: 22,
-  color: '#000',
+  color: '#7159c1',
 })`
   margin: 0 10px;
 `;

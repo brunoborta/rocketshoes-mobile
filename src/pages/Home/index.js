@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import PropTypes from 'prop-types';
 
 import * as CartActions from '../../store/modules/cart/actions';
 import api from '../../services/api';
@@ -22,79 +20,63 @@ import {
   ProductCarrousel,
 } from './styles';
 
-class Home extends Component {
-  state = {
-    products: [],
-  };
+function Home() {
+  const [products, setProducts] = useState([]);
 
-  static propTypes = {
-    addToCartRequest: PropTypes.func.isRequired,
-    quantity: PropTypes.arrayOf(PropTypes.number).isRequired,
-  };
+  useEffect(() => {
+    async function loadProducts() {
+      const response = await api.get('products');
+      const data = response.data.map(product => {
+        return {
+          ...product,
+          formattedPrice: formatPrice(product.price),
+        };
+      });
+      setProducts(data);
+    }
+    loadProducts();
+  }, []);
 
-  async componentDidMount() {
-    const products = await api.get('products');
-    const data = products.data.map(product => {
-      return {
-        ...product,
-        formattedPrice: formatPrice(product.price),
-      };
-    });
+  const dispatch = useDispatch();
+  const quantity = useSelector(state =>
+    state.cart.reduce((acc, product) => {
+      acc[product.id] = product.quantity;
+      return acc;
+    }, [])
+  );
 
-    this.setState({ products: data });
+  function handleButton(product) {
+    dispatch(CartActions.addToCartRequest(product));
   }
 
-  handleButton = product => {
-    const { addToCartRequest } = this.props;
-
-    addToCartRequest(product);
-  };
-
-  render() {
-    const { products } = this.state;
-    const { quantity } = this.props;
-    return (
-      <Container>
-        <ProductCarrousel>
-          {products ? (
-            products.map(product => (
-              <ProductItem key={product.id}>
-                <ProductImage
-                  source={{
-                    uri: product.image,
-                  }}
-                />
-                <Title>{product.title}</Title>
-                <Price>{product.formattedPrice}</Price>
-                <AddButton onPress={() => this.handleButton(product)}>
-                  <BasketContainer>
-                    <Icon name="shopping-basket" size={20} color="#FFF" />
-                    <Counter>{quantity[product.id] || 0}</Counter>
-                  </BasketContainer>
-                  <CartAddText>Adicionar</CartAddText>
-                </AddButton>
-              </ProductItem>
-            ))
-          ) : (
-            <ActivityIndicator size="large" color="#fff" />
-          )}
-        </ProductCarrousel>
-      </Container>
-    );
-  }
+  return (
+    <Container>
+      <ProductCarrousel>
+        {products ? (
+          products.map(product => (
+            <ProductItem key={product.id}>
+              <ProductImage
+                source={{
+                  uri: product.image,
+                }}
+              />
+              <Title>{product.title}</Title>
+              <Price>{product.formattedPrice}</Price>
+              <AddButton onPress={() => handleButton(product)}>
+                <BasketContainer>
+                  <Icon name="shopping-basket" size={20} color="#FFF" />
+                  <Counter>{quantity[product.id] || 0}</Counter>
+                </BasketContainer>
+                <CartAddText>Adicionar</CartAddText>
+              </AddButton>
+            </ProductItem>
+          ))
+        ) : (
+          <ActivityIndicator size="large" color="#fff" />
+        )}
+      </ProductCarrousel>
+    </Container>
+  );
 }
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(CartActions, dispatch);
-
-const mapStateToProps = state => ({
-  quantity: state.cart.reduce((acc, product) => {
-    acc[product.id] = product.quantity;
-    return acc;
-  }, []),
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
+export default Home;
